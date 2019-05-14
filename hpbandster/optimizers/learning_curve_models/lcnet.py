@@ -12,15 +12,16 @@ class LCNetWrapper(LCModel):
 
     def __init__(self, max_num_epochs):
         self.max_num_epochs = max_num_epochs
-        self.model = LCNet(sampling_method="sghmc",
-                           l_rate=np.sqrt(1e-4),
-                           mdecay=.05,
-                           n_nets=100,
-                           burn_in=5000,
-                           n_iters=30000,
-                           get_net=get_lc_net,
-                           precondition=True)
-    
+        self.model = LCNet(
+            sampling_method="sghmc",
+            l_rate=np.sqrt(1e-4),
+            mdecay=.05,
+            n_nets=100,
+            burn_in=5000,
+            n_iters=30000,
+            get_net=get_lc_net,
+            precondition=True)
+
     def fit(self, times, losses, configs=None):
         """
             function to train the model on the observed data
@@ -47,7 +48,8 @@ class LCNetWrapper(LCModel):
 
             t_idx = times[i] / self.max_num_epochs
 
-            x = np.repeat(np.array(configs[i])[None, :], t_idx.shape[0], axis=0)
+            x = np.repeat(
+                np.array(configs[i])[None, :], t_idx.shape[0], axis=0)
             x = np.concatenate((x, t_idx[:, None]), axis=1)
 
             # LCNet assumes increasing curves, if we feed in losses here we have to flip the curves
@@ -117,4 +119,3 @@ class LCNetWrapper(LCModel):
                 
         """
         return self.predict_unseen(times, config)
-

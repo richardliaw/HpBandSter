@@ -41,14 +41,15 @@ class LCNetWrapper(base_config_generator):
         super(LCNetWrapper, self).__init__(**kwargs)
 
         self.n_candidates = n_candidates
-        self.model = LCNet(sampling_method="sghmc",
-                           l_rate=np.sqrt(1e-4),
-                           mdecay=.05,
-                           n_nets=100,
-                           burn_in=500,
-                           n_iters=3000,
-                           get_net=get_lc_net,
-                           precondition=True)
+        self.model = LCNet(
+            sampling_method="sghmc",
+            l_rate=np.sqrt(1e-4),
+            mdecay=.05,
+            n_nets=100,
+            burn_in=500,
+            n_iters=3000,
+            get_net=get_lc_net,
+            precondition=True)
 
         self.config_space = configspace
         self.max_budget = max_budget
@@ -80,11 +81,14 @@ class LCNetWrapper(base_config_generator):
         if not self.is_trained:
             c = self.config_space.sample_configuration().get_array()
         else:
-            candidates = np.array([self.config_space.sample_configuration().get_array()
-                                   for _ in range(self.n_candidates)])
+            candidates = np.array([
+                self.config_space.sample_configuration().get_array()
+                for _ in range(self.n_candidates)
+            ])
 
             # We are only interested on the asymptotic value
-            projected_candidates = np.concatenate((candidates, np.ones([self.n_candidates, 1])), axis=1)
+            projected_candidates = np.concatenate(
+                (candidates, np.ones([self.n_candidates, 1])), axis=1)
 
             # Compute the upper confidence bound of the function at the asymptote
             m, v = self.model.predict(projected_candidates)
@@ -123,7 +127,8 @@ class LCNetWrapper(base_config_generator):
         """
         super().new_result(job)
 
-        conf = ConfigSpace.Configuration(self.config_space, job.kwargs['config']).get_array()
+        conf = ConfigSpace.Configuration(self.config_space,
+                                         job.kwargs['config']).get_array()
 
         epochs = len(job.result["info"]["learning_curve"])
         budget = int(job.kwargs["budget"])
